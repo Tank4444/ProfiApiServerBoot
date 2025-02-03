@@ -1,0 +1,20 @@
+meta {
+  name: watermark
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080//lunar-watermark
+  body: multipartForm
+  auth: none
+}
+
+headers {
+  Content-Type: multipart/form-data
+}
+
+body:multipart-form {
+  fileimage: @file(C:\Users\chayu\Downloads\Form Confirmed.png)
+  message: HelloWOld
+}
