@@ -27,7 +27,7 @@ class User(
     val lastName: String = lastName
     val password: String = password
     val patronymic: String = patronymic
-    val token: String?=""
+    var token: String?=""
     fun getFullName()="$firstName $lastName $patronymic"
 }
 

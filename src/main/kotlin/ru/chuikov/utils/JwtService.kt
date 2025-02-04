@@ -19,9 +19,10 @@ class JwtService {
     private val jwtSigningKey: String? = null
 
 
-    private fun generateToken(user: User): String {
-        return Jwts.builder().setSubject(user.email)
-            //.setIssuedAt(Date(System.currentTimeMillis()))
+    fun generateToken(): String {
+        return Jwts.builder()
+            //.setSubject(user.email)
+            .setIssuedAt(Date(System.currentTimeMillis()))
             //.setExpiration(Date(System.currentTimeMillis() + 100000 * 60 * 24))
             .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact()
     }

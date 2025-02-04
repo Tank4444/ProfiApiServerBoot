@@ -1,0 +1,18 @@
+meta {
+  name: Authorization
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/authorization
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "user@prof.ru",
+    "password": "pA1"
+  }
+}
