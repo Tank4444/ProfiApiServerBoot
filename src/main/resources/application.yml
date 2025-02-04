@@ -1,5 +1,5 @@
 server:
-    port: 8080
+  port: 8080
 spring:
   servlet:
     multipart:
@@ -18,5 +18,8 @@ spring:
     console:
       enabled: true
       path: /h2
+token:
+  signing:
+    key: RFTG54GH56U567U54Y54756786RYTHY6UHJRTGH34TY54UJR4EW6T55
 
 

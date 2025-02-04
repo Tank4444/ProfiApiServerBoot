@@ -1,5 +1,6 @@
 package ru.chuikov.controller
 
+import org.apache.tika.Tika
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.InputStreamResource
 import org.springframework.core.io.Resource
@@ -17,23 +18,21 @@ import ru.chuikov.utils.Watermark
 @RestController
 @RequestMapping("/lunar-watermark")
 class WatermarkController(
-    val watermarkService: Watermark
+    val watermarkService: Watermark,
 ) {
     data class WaterRequest(
         val message: String,
         val fileimage: MultipartFile
     )
 
-
     @PostMapping(consumes = [MULTIPART_FORM_DATA_VALUE])
     fun makeWatermark(@ModelAttribute request: WaterRequest): ResponseEntity<Resource> {
-
-        var a = watermarkService.addWatermark(request.fileimage.bytes, request.message)
+        var file = watermarkService.addWatermark(request.fileimage.bytes, request.message)
         return ResponseEntity.ok()
             .contentType(MediaType.IMAGE_JPEG)
-            .contentLength(a.size.toLong())
+            .contentLength(file.size.toLong())
             .body(
-                ByteArrayResource(a)
+                ByteArrayResource(file)
 
             )
     }

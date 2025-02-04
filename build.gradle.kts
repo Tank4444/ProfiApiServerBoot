@@ -45,6 +45,13 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("net.coobird:thumbnailator:0.4.20")
+    implementation("org.apache.tika:tika-core:3.0.0")
+    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+    implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
+    implementation("io.jsonwebtoken:jjwt-gson:0.12.6")
+    implementation(kotlin("reflect"))
+
+
 
 }
 
