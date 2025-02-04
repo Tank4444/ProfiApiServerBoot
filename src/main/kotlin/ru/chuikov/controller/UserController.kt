@@ -1,9 +1,11 @@
 package ru.chuikov.controller
 
 import com.google.gson.annotations.SerializedName
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import ru.chuikov.entity.User
 import ru.chuikov.repository.UserRepository
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
@@ -31,7 +33,7 @@ class UserController(
     }
 
     @PostMapping("/registration")
-    fun registration(@RequestBody request: UserRegistrationDto) {
+    fun registration(@RequestBody request: UserRegistrationDto): ResponseEntity<Any> {
 //        var error = ErrorRegistrationResponse(
 //            ErrorRegistrationResponse
 //                .Error(
@@ -81,19 +83,76 @@ class UserController(
         //check password
         if ((request.password == null) || request.password.equals(""))
             errors.put("password", arrayOf("field password can not be blank"))
+        var a = checkPassword(request.password!!)
+        if (!checkPassword(request.password!!) || request.password!!.length < 3)
+            errors.put("password", arrayOf("field password does not meet the requirements"))
 
-
-
-
-    }
-
-    fun exist(s:String):Boolean{
-
-        for (i in 'a'..'z'){
-            if (notExist(s,i))
+        if (errors.size == 0) {
+            var user = User(
+                id = 0,
+                birthDate = request.birth_date!!,
+                email = request.email!!,
+                firstName = request.first_name!!,
+                lastName = request.last_name!!,
+                password = request.password!!,
+                patronymic = request.patronymic!!,
+            )
+            userRepository.save(
+                user
+            )
+            return ResponseEntity.ok().body(
+                RegistrationSuccessfulResponse(
+                    data = RegistrationSuccessfulResponse.Data(
+                        code = 201,
+                        message = "Пользователь создан",
+                        user = RegistrationSuccessfulResponse.Data.User(
+                            email = user.email,
+                            name = user.getFullName()
+                        )
+                    )
+                )
+            )
+        } else {
+            return ResponseEntity.ok().body(
+                ErrorRegistrationResponse(
+                    ErrorRegistrationResponse.Error(
+                        code = 422,
+                        message = "Validation error",
+                        errors = errors
+                    )
+                )
+            )
         }
+
+
     }
-    fun notExist(s:String,ch:Char) = !s.contains(ch)
+
+    fun checkPassword(s: String): Boolean {
+        var sum = 0
+        for (i in 'a'..'z') {
+            if (exist(s, i)) {
+                sum++
+                break
+            }
+        }
+
+        for (i in 'A'..'Z') {
+            if (exist(s, i)) {
+                sum++
+                break
+            }
+        }
+
+        for (i in '0'..'9') {
+            if (exist(s, i)) {
+                sum++
+                break
+            }
+        }
+        return sum == 3
+    }
+
+    fun exist(s: String, ch: Char) = s.contains(ch)
 
     data class ErrorRegistrationResponse(
         @SerializedName("error")
@@ -111,6 +170,27 @@ class UserController(
         }
     }
 
+
+    data class RegistrationSuccessfulResponse(
+        @SerializedName("data")
+        var `data`: Data?
+    ) {
+        data class Data(
+            @SerializedName("code")
+            var code: Int?,
+            @SerializedName("message")
+            var message: String?,
+            @SerializedName("user")
+            var user: User?
+        ) {
+            data class User(
+                @SerializedName("email")
+                var email: String?,
+                @SerializedName("name")
+                var name: String?
+            )
+        }
+    }
 
 }
 

@@ -5,7 +5,7 @@ import jakarta.persistence.*
 
 
 @Entity
-@Table
+@Table(name = "user_account")
 class User(
     birthDate: String,
     email: String,
@@ -16,8 +16,8 @@ class User(
     id: Int
 ) {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "user_id_seq")
-    @SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO,)
+    //@SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq", allocationSize = 1)
     val id: Int = id
 
     val birthDate: String = birthDate
@@ -28,6 +28,7 @@ class User(
     val password: String = password
     val patronymic: String = patronymic
     val token: String?=""
+    fun getFullName()="$firstName $lastName $patronymic"
 }
 
 
