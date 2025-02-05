@@ -15,7 +15,6 @@ fun main(args: Array<String>) {
     runApplication<Application>(*args)
 }
 
-
 //
 //@Profile("dev")
 //@Bean(initMethod = "start", destroyMethod = "stop")

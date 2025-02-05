@@ -2,9 +2,13 @@ package ru.chuikov.controller
 
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
 import ru.chuikov.controller.util.LOGIN_FAILED
 import ru.chuikov.controller.util.checkEmpty
@@ -19,9 +23,8 @@ import ru.chuikov.utils.JwtService
 class UserController(
     val userRepository: UserRepository,
     val tokenService: JwtService
-) {
-
-
+)
+{
     @PostMapping("/registration")
     fun registration(@RequestBody request: UserRegistrationDto): ResponseEntity<Any> {
         var errors = mutableMapOf<String, Array<String>>()
@@ -111,7 +114,6 @@ class UserController(
                 )
             }
             return LOGIN_FAILED
-
         } else return ResponseEntity.ok().body(
             ValidationErrorResponse(
                 ValidationErrorResponse.Error(
@@ -123,8 +125,16 @@ class UserController(
         )
     }
 
+    @GetMapping("/logout")
+    fun logout(@RequestHeader(value = "Authorization" ) token: String?): ResponseEntity<out Any>{
+        if (token==null || token=="") return LOGIN_FAILED
+        else{
+            var user = userRepository.findB
+        }
 
+    }
 }
+
 
 data class ValidationErrorResponse(
     @JsonProperty("error")
@@ -176,15 +186,12 @@ data class RegistrationSuccessfulResponse(
         )
     }
 }
-
 data class AuthorizationRequest(
     @JsonProperty("email")
     val email: String?,
     @JsonProperty("password")
     val password: String?
 ) {
-
-
 }
 
 data class AuthorizationSuccessfulResponse(
