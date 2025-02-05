@@ -2,9 +2,6 @@ package ru.chuikov.controller
 
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,26 +18,21 @@ import ru.chuikov.utils.JwtService
 @RestController
 class UserController(
     val userRepository: UserRepository,
-    val tokenService: JwtService
+    val tokenService: JwtService,
+    val validator: Validator
 ) {
     @PostMapping("/registration")
     fun registration(@RequestBody request: UserRegistrationDto): ResponseEntity<Any> {
         var errors = mutableMapOf<String, Array<String>>()
 
-        //check names
-        validateStringWithFirstChar(request.first_name, "first_name")?.let { errors.putAll(it) }
-        validateStringWithFirstChar(request.last_name, "last_name")?.let { errors.putAll(it) }
-        validateStringWithFirstChar(request.patronymic, "patronymic")?.let { errors.putAll(it) }
 
-        //check email
-        if (request.email == null || request.email.equals(""))
-            errors.put("email", arrayOf("field email can not be blank"))
-        else if (userRepository.existsByEmail(request.email!!))
-            errors.put("email", arrayOf("field email already exists"))
-        //check birth
-        checkEmpty(request.birth_date, "birth_date")?.let { errors.putAll(it) }
+        validator.validateStringWithFirstChar(request.first_name, "first_name")?.let { errors.putAll(it) }
+        validator.validateStringWithFirstChar(request.last_name, "last_name")?.let { errors.putAll(it) }
+        validator.validateStringWithFirstChar(request.patronymic, "patronymic")?.let { errors.putAll(it) }
+        validator.fullCheckEmail(request.email)?.let { errors.putAll(it) }
+        validator.checkEmpty(request.birth_date, "birth_date")?.let { errors.putAll(it) }
+        validator.checkPassword(request.password)?.let { errors.putAll(it) }
 
-        checkPassword(request.password)?.let { errors.putAll(it) }
         if (errors.isEmpty()) {
             val user = User(
                 id = 0,
@@ -82,13 +74,10 @@ class UserController(
     @PostMapping("/authorization")
     fun authorization(@RequestBody request: AuthorizationRequest): ResponseEntity<out Any> {
         var errors = mutableMapOf<String, Array<String>>()
-        checkPassword(request.password)?.let { errors.putAll(it) }
+        validator.checkPassword(request.password)?.let { errors.putAll(it) }
 
         //check email
-        if (request.email == null || request.email == "")
-            errors.put("email", arrayOf("field email can not be blank"))
-//        else if (userRepository.existsByEmail(request.email))
-//            errors.put("email", arrayOf("field email already exists"))
+        validator.lightCheckEmail(request.email)?.let { errors.putAll(it) }
 
         if (errors.isEmpty()) {
             var user: User = userRepository.findByEmail(request.email!!)
@@ -125,21 +114,25 @@ class UserController(
 
     @GetMapping("/logout")
     fun logout(@RequestHeader(value = "Authorization") token: String?): ResponseEntity<out Any> {
-        if (token == null || token == "") return LOGIN_FAILED
-        else {
-            var tokenArr = token.split(" ")
-            if (tokenArr.size == 2) {
-                if (tokenArr[0] == "Bearer") {
-                    var user = userRepository.findByToken(tokenArr[1])
-                    if (user != null) {
-                        userRepository.updateToken(null, user.id)
-                        return ResponseEntity.status(204).contentType(MediaType.APPLICATION_JSON).body(null)
-                    }
-                }
-            }
-        }
-        return LOGIN_FAILED
-
+//        if (token == null || token == "") return LOGIN_FAILED
+//        else {
+//            var tokenArr = token.split(" ")
+//            if (tokenArr.size == 2) {
+//                if (tokenArr[0] == "Bearer") {
+//                    var user = userRepository.findByToken(tokenArr[1])
+//                    if (user != null) {
+//                        userRepository.updateToken(null, user.id)
+//                        return ResponseEntity.status(204).contentType(MediaType.APPLICATION_JSON).body(null)
+//                    }
+//                }
+//            }
+//        }
+//        return LOGIN_FAILED
+        if (validator.tokenIsValid(token)) {
+            var user = userRepository.findByToken(token!!.split(" ")[1])
+            userRepository.updateToken(null, user!!.id)
+            return ResponseEntity.status(204).contentType(MediaType.APPLICATION_JSON).body(null)
+        }else return LOGIN_FAILED
     }
 }
 
