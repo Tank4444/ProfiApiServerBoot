@@ -1,5 +1,12 @@
 package ru.chuikov.controller.util
 
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+
+
+fun getHeaderJson() = HttpHeaders().apply {
+    contentType = MediaType.APPLICATION_JSON
+}
 
 fun checkPassword(s: String): Boolean {
     var sum = 0

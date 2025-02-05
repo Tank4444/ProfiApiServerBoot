@@ -4,16 +4,15 @@ package ru.chuikov.controller
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
-import ru.chuikov.controller.util.LOGIN_FAILED
-import ru.chuikov.controller.util.checkEmpty
-import ru.chuikov.controller.util.checkPassword
-import ru.chuikov.controller.util.validateStringWithFirstChar
+import ru.chuikov.controller.util.*
 import ru.chuikov.entity.User
 import ru.chuikov.repository.UserRepository
 import ru.chuikov.utils.JwtService
@@ -23,8 +22,7 @@ import ru.chuikov.utils.JwtService
 class UserController(
     val userRepository: UserRepository,
     val tokenService: JwtService
-)
-{
+) {
     @PostMapping("/registration")
     fun registration(@RequestBody request: UserRegistrationDto): ResponseEntity<Any> {
         var errors = mutableMapOf<String, Array<String>>()
@@ -56,7 +54,7 @@ class UserController(
             userRepository.save(
                 user
             )
-            return ResponseEntity.ok().body(
+            return ResponseEntity.status(201).body(
                 RegistrationSuccessfulResponse(
                     data = RegistrationSuccessfulResponse.Data(
                         code = 201,
@@ -69,7 +67,7 @@ class UserController(
                 )
             )
         } else {
-            return ResponseEntity.ok().body(
+            return ResponseEntity.status(422).body(
                 ValidationErrorResponse(
                     ValidationErrorResponse.Error(
                         code = 422,
@@ -114,7 +112,7 @@ class UserController(
                 )
             }
             return LOGIN_FAILED
-        } else return ResponseEntity.ok().body(
+        } else return ResponseEntity.status(422).body(
             ValidationErrorResponse(
                 ValidationErrorResponse.Error(
                     code = 422,
@@ -126,11 +124,21 @@ class UserController(
     }
 
     @GetMapping("/logout")
-    fun logout(@RequestHeader(value = "Authorization" ) token: String?): ResponseEntity<out Any>{
-        if (token==null || token=="") return LOGIN_FAILED
-        else{
-            var user = userRepository.findB
+    fun logout(@RequestHeader(value = "Authorization") token: String?): ResponseEntity<out Any> {
+        if (token == null || token == "") return LOGIN_FAILED
+        else {
+            var tokenArr = token.split(" ")
+            if (tokenArr.size == 2) {
+                if (tokenArr[0] == "Bearer") {
+                    var user = userRepository.findByToken(tokenArr[1])
+                    if (user != null) {
+                        userRepository.updateToken(null, user.id)
+                        return ResponseEntity.status(204).contentType(MediaType.APPLICATION_JSON).body(null)
+                    }
+                }
+            }
         }
+        return LOGIN_FAILED
 
     }
 }
@@ -186,6 +194,7 @@ data class RegistrationSuccessfulResponse(
         )
     }
 }
+
 data class AuthorizationRequest(
     @JsonProperty("email")
     val email: String?,

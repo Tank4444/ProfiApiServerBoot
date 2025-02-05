@@ -1,10 +1,11 @@
 package ru.chuikov.controller.util
 
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 
 
-val LOGIN_FAILED = ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+val LOGIN_FAILED = ResponseEntity.status(HttpStatus.FORBIDDEN) .body(
     mapOf("message" to "Login failed")
 )
 

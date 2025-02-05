@@ -10,10 +10,12 @@ import java.util.*
 
 @Repository
 interface UserRepository: JpaRepository<User, Int> {
+
+    fun findByToken(token: String): User?
     @Transactional
     @Modifying
     @Query("update User u set u.token = ?1 where u.id = ?2")
-    fun updateToken(token: String, id: Int)
+    fun updateToken(token: String?, id: Int)
 
 //
 //    fun findByToken(token: String): User?
