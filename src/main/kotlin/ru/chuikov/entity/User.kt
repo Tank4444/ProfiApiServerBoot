@@ -1,7 +1,7 @@
 package ru.chuikov.entity
 
 import jakarta.persistence.*
-
+import ru.chuikov.entity.mission.MissionEntity
 
 
 @Entity
@@ -28,6 +28,10 @@ class User(
     val password: String = password
     val patronymic: String = patronymic
     var token: String?=null
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var missions: MutableList<MissionEntity>? = null
+
     fun getFullName()="$firstName $lastName $patronymic"
 }
 

@@ -25,6 +25,12 @@ fun main(args: Array<String>) {
 }
 fun String.checkPrefix() = if (this!="")  "${this}_" else this
 
+fun String.getToken():String?{
+    var spl = this.split(" ")
+    if (spl.size==2) return spl[1]
+    else return null
+}
+
 //
 //@Profile("dev")
 //@Bean(initMethod = "start", destroyMethod = "stop")

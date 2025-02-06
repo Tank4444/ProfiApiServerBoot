@@ -13,7 +13,7 @@ val LOGIN_FORBIDDEN = ResponseEntity.status(HttpStatus.FORBIDDEN).body(
     mapOf("message" to "Forbidden for you")
 )
 
-val LOGIN_NOT_FOUND = ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+val NOT_FOUND = ResponseEntity.status(HttpStatus.NOT_FOUND).body(
     mapOf(
         "message" to "Not found",
         "code" to 404
