@@ -1,10 +1,9 @@
 package ru.chuikov.entity
 
-class Mission {
+import com.google.gson.annotations.SerializedName
 
-    var id:Int?=null
-    var
-}
+
+
 
 var a = """
 

@@ -50,6 +50,8 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
     implementation("io.jsonwebtoken:jjwt-gson:0.12.6")
     implementation(kotlin("reflect"))
+    implementation("org.modelmapper:modelmapper:3.2.2")
+
 
 
 
