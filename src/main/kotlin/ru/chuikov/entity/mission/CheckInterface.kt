@@ -1,7 +1,7 @@
 package ru.chuikov.entity.mission
 
 interface CheckInterface {
-    fun check():MutableMap<String,Array<String>>?
+    fun check(prefix:String):MutableMap<String,Array<String>>?
 
     fun checkEmpty(s: String?, field: String) = when (s) {
         "" -> mapOf(field to arrayOf("field $field can not be blank"))

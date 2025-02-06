@@ -1,21 +1,19 @@
 package ru.chuikov.entity.mission
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import jakarta.persistence.*
+import ru.chuikov.checkPrefix
 
 @Entity
 @Table(name = "crew_entity")
-@JsonIdentityInfo(
-    generator = ObjectIdGenerators.PropertyGenerator::class,
-    property = "id"
-)
 class CrewEntity :CheckInterface{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    @JsonIgnore(true)
+    @JsonIgnore
     var id: Long? = null
 
     @Column(name = "name")
@@ -24,13 +22,17 @@ class CrewEntity :CheckInterface{
     @Column(name = "role")
     var role: String? = null
 
-    @ManyToOne
+    @ManyToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "spacecraft_entity_id")
+    @JsonBackReference
     var spacecraft: SpacecraftEntity? = null
-    override fun check(): MutableMap<String, Array<String>>? {
+
+
+    override fun check(prefix:String): MutableMap<String, Array<String>>? {
+        var pre = prefix.checkPrefix()
         var a = mutableMapOf<String,Array<String>>()
-        checkEmpty(name,"crew_name")?.let { a.putAll(it) }
-        checkEmpty(role,"crew_role")?.let { a.putAll(it) }
+        checkEmpty(name,"${pre}name")?.let { a.putAll(it) }
+        checkEmpty(role,"${pre}role")?.let { a.putAll(it) }
         return a
     }
 }

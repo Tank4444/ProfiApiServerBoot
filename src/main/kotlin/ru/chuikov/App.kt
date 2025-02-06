@@ -23,7 +23,7 @@ class Application{
 fun main(args: Array<String>) {
     runApplication<Application>(*args)
 }
-
+fun String.checkPrefix() = if (this!="")  "${this}_" else this
 
 //
 //@Profile("dev")

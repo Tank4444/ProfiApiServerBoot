@@ -114,20 +114,6 @@ class UserController(
 
     @GetMapping("/logout")
     fun logout(@RequestHeader(value = "Authorization") token: String?): ResponseEntity<out Any> {
-//        if (token == null || token == "") return LOGIN_FAILED
-//        else {
-//            var tokenArr = token.split(" ")
-//            if (tokenArr.size == 2) {
-//                if (tokenArr[0] == "Bearer") {
-//                    var user = userRepository.findByToken(tokenArr[1])
-//                    if (user != null) {
-//                        userRepository.updateToken(null, user.id)
-//                        return ResponseEntity.status(204).contentType(MediaType.APPLICATION_JSON).body(null)
-//                    }
-//                }
-//            }
-//        }
-//        return LOGIN_FAILED
         if (validator.tokenIsValid(token)) {
             var user = userRepository.findByToken(token!!.split(" ")[1])
             userRepository.updateToken(null, user!!.id)
