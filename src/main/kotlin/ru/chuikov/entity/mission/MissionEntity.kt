@@ -15,7 +15,7 @@ class MissionEntity : CheckInterface {
     @JsonIgnore
     var id: Long? = null
 
-    @ManyToOne(cascade = [CascadeType.ALL])
+    @ManyToOne()
     @JoinColumn(name = "user_id")
     @JsonIgnore
     var user: User? = null

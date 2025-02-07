@@ -5,16 +5,16 @@ meta {
 }
 
 post {
-  url: http://localhost:8080//lunar-watermark
+  url: http://localhost:8080/lunar-watermark
   body: multipartForm
   auth: none
 }
 
 headers {
-  Content-Type: multipart/form-data
+  Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3Mzg5MjE1NjR9.IWk74vjaKtXA_4Wx33U_cNSNNULou13Z1nUQv9U1xFQ
 }
 
 body:multipart-form {
-  fileimage: @file(C:\Users\chayu\Downloads\Form Confirmed.png)
+  fileimage: @file(C:\Users\chayu\Downloads\row_arrangement_visualization (1).gif)
   message: HelloWOld
 }

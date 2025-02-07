@@ -39,13 +39,7 @@ class LunarMissionController(
         mission.user = user
         var errors = mission.check("")
         if (!errors.isEmpty()) return ResponseEntity.status(422).body(
-            ValidationErrorResponse(
-                ValidationErrorResponse.Error(
-                    code = 422,
-                    message = "Validation error",
-                    errors = errors
-                )
-            )
+            getValidationErrorResponse(errors = errors)
         )
 
         missionRepository.save(mission)
@@ -72,11 +66,17 @@ class LunarMissionController(
         if (!validator.tokenIsValid(token)) return LOGIN_FAILED
         var user: User = userRepository.findByToken(token!!.getToken()!!)!!
         var mission: MissionEntity = missionRepository.findById(id).getOrNull() ?: return NOT_FOUND
-        if (user.id!=mission.user!!.id) LOGIN_FORBIDDEN
-        user.missions!!.removeIf { it.id==id }
+        if (user.id != mission.user!!.id) LOGIN_FORBIDDEN
+        user.missions!!.removeIf { it.id == id }
+        //user.missions = user.missions?.filter { it.id!=id }?.toMutableList()
         userRepository.save(user)
         return ResponseEntity.status(204).contentType(MediaType.APPLICATION_JSON).body(null)
 
+    }
+
+    fun editMission(): ResponseEntity<out Any> {
+        TODO("edit mission")
+        return ResponseEntity.ok().body(null)
     }
 
 }

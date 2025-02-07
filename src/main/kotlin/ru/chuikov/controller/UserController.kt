@@ -60,13 +60,7 @@ class UserController(
             )
         } else {
             return ResponseEntity.status(422).body(
-                ValidationErrorResponse(
-                    ValidationErrorResponse.Error(
-                        code = 422,
-                        message = "Validation error",
-                        errors = errors
-                    )
-                )
+                getValidationErrorResponse(errors = errors)
             )
         }
     }
@@ -102,13 +96,7 @@ class UserController(
             }
             return LOGIN_FAILED
         } else return ResponseEntity.status(422).body(
-            ValidationErrorResponse(
-                ValidationErrorResponse.Error(
-                    code = 422,
-                    message = "Validation error",
-                    errors = errors
-                )
-            )
+            getValidationErrorResponse(errors = errors)
         )
     }
 
@@ -118,40 +106,10 @@ class UserController(
             var user = userRepository.findByToken(token!!.split(" ")[1])
             userRepository.updateToken(null, user!!.id)
             return ResponseEntity.status(204).contentType(MediaType.APPLICATION_JSON).body(null)
-        }else return LOGIN_FAILED
+        } else return LOGIN_FAILED
     }
 }
 
-
-data class ValidationErrorResponse(
-    @JsonProperty("error")
-    var error: Error?
-) {
-    data class Error(
-        @JsonProperty("code")
-        var code: Int?,
-        @JsonProperty("errors")
-        var errors: Map<String, Array<String>>,
-        @JsonProperty("message")
-        var message: String?
-    ) {
-    }
-}
-
-data class UserRegistrationDto(
-    @JsonProperty("birth_date")
-    var birth_date: String?,
-    @JsonProperty("email")
-    var email: String?,
-    @JsonProperty("first_name")
-    var first_name: String?,
-    @JsonProperty("last_name")
-    var last_name: String?,
-    @JsonProperty("password")
-    var password: String?,
-    @JsonProperty("patronymic")
-    var patronymic: String?
-)
 
 data class RegistrationSuccessfulResponse(
     @JsonProperty("data")
