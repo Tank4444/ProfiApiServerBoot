@@ -1,0 +1,21 @@
+meta {
+  name: BayTiketSpaceFlight
+  type: http
+  seq: 13
+}
+
+post {
+  url: http://localhost:8080/book-flight
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzkxNzI2NjF9._dOeuYBubdsOWQjtRBckdsBgnXTFneuNVn4eXE1-Fd4
+}
+
+body:json {
+  {
+    "flight_number": "СФ-103"
+  }
+}
