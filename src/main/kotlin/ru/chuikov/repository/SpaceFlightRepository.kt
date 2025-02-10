@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository
 import ru.chuikov.entity.SpaceFlightEntity
 @Repository
 interface SpaceFlightRepository : JpaRepository<SpaceFlightEntity, Long> {
+    fun findByUser_Id(id: Int): List<SpaceFlightEntity>
 }

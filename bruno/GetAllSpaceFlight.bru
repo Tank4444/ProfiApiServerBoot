@@ -1,0 +1,24 @@
+meta {
+  name: GetAllSpaceFlight
+  type: http
+  seq: 12
+}
+
+post {
+  url: http://localhost:8080/space-flights
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzkxNTY0NzV9.m1FWY5HcXX6dUnOD1eEMj7wILZ9ZPBU_rcGtNKGOjCo
+}
+
+body:json {
+  {
+    "flight_number": "СФ-103",
+    "destination": "Марс",
+    "launch_date": "2025-05-15",
+    "seats_available": 6
+  }
+}
