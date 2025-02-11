@@ -8,7 +8,7 @@ import ru.chuikov.entity.SpaceFlightEntity
 @Repository
 interface SpaceFlightRepository : JpaRepository<SpaceFlightEntity, Long> {
 
-    @Query("select s from SpaceFlightEntity s where s.id =:flight_number")
+    @Query("select s from SpaceFlightEntity s where s.flight_number =:flight_number")
     fun findByFlightNumber(flight_number: String): SpaceFlightEntity?
 
     fun findByUser_Id(id: Int): List<SpaceFlightEntity>

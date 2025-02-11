@@ -1,22 +1,42 @@
 package ru.chuikov
 
 
-import org.apache.tika.Tika
+
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.info.Contact
+import io.swagger.v3.oas.models.info.Info
+import io.swagger.v3.oas.models.servers.Server
 import org.modelmapper.ModelMapper
 import org.modelmapper.convention.MatchingStrategies
-import org.modelmapper.spi.MatchingStrategy
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
-import org.springframework.stereotype.Component
+import org.springframework.core.env.Environment
+import java.util.List
 
 
 @SpringBootApplication
-class Application{
+class Application(
+    val environment: Environment
+){
 
     @Bean
     fun modelMapper() = ModelMapper().also {
         it.configuration.matchingStrategy = MatchingStrategies.LOOSE
+    }
+
+    @Bean
+    fun defineOpenAPI(): OpenAPI {
+        val server: Server = Server()
+        val serverUrl: String = environment.getProperty("api.server.url")?:""
+        server.setUrl(serverUrl)
+        server.setDescription("Development")
+
+
+        val info: Info = Info()
+            .title("Профессионалы 2025")
+            .description("В разработке.")
+        return OpenAPI().info(info).servers(List.of(server))
     }
 }
 

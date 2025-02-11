@@ -30,14 +30,22 @@ class SpaceFlightController(
 ) {
 
 
-    @PostMapping("/space-flights")
+    @PostMapping(
+        "/space-flights",
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+    )
     fun createFlight(
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) token: String?,
         @RequestBody flight: SpaceFlightRequest,
     ): ResponseEntity<out Any> {
         if (!validator.tokenIsValid(token)) return LOGIN_FAILED
         var spFlight = mapper.map(flight, SpaceFlightEntity::class.java)
-        var errors = spFlight.check("") ?: mapOf<String, Array<String>>()
+        var errors = spFlight.check("") ?: mutableMapOf<String, Array<String>>()
+
+        if (spaceFlightRepository.findByFlightNumber(flight.flight_number!!) != null)
+            errors.putAll(mapOf("flight_number" to arrayOf("space flight with ${flight.flight_number} already exist")))
+
         if (errors.isNotEmpty()) {
             return ResponseEntity.status(422).contentType(MediaType.APPLICATION_JSON).body(
                 getValidationErrorResponse(errors = errors)
@@ -57,7 +65,11 @@ class SpaceFlightController(
 
     }
 
-    @GetMapping("/space-flights")
+    @GetMapping(
+        "/space-flights",
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+    )
     fun getFlights(@RequestHeader(value = HttpHeaders.AUTHORIZATION) token: String?): ResponseEntity<out Any> {
         if (!validator.tokenIsValid(token)) return LOGIN_FAILED
 
@@ -86,9 +98,10 @@ class SpaceFlightController(
         var flight: SpaceFlightEntity? = spaceFlightRepository.findByFlightNumber(request.flight_number!!)
         validator.checkEmpty(request.flight_number, "flight_number")?.let {
             flight ?: return NOT_FOUND
-            if (flight.seats_available!! <= 0) error.putAll(mapOf("flight_number" to arrayOf("seats count is 0 ")))
-            else error.putAll(it)
+            error.putAll(it)
         }
+        if (flight!!.seats_available!! <= 0) error.putAll(mapOf("flight_number" to arrayOf("seats count is 0 ")))
+
         if (error.isNotEmpty()) return ResponseEntity.status(422).body(getValidationErrorResponse(errors = error))
 
         flight?.let {
@@ -98,6 +111,8 @@ class SpaceFlightController(
         return ResponseEntity.status(201).body(mapOf("data" to mapOf("code" to 201, "message" to "Рейс забронирован")))
 
     }
+
+
 
     fun search(@RequestHeader(value = HttpHeaders.AUTHORIZATION) token: String?): ResponseEntity<out Any> {
         TODO("")

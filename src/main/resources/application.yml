@@ -23,6 +23,12 @@ spring:
 token:
   signing:
     key: RFTG54GH56U567U54Y54756786RYTHY6UHJRTGH34TY54UJR4EW6T55
+springdoc:
+  api-docs:
+    path: /api-docs
+api:
+  server:
+    url: http://localhost:8080
 
 
 

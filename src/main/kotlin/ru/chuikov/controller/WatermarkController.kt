@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestAttribute
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.multipart.MultipartFile
@@ -34,7 +35,7 @@ class WatermarkController(
     @PostMapping(consumes = [MULTIPART_FORM_DATA_VALUE])
     fun makeWatermark(
         @ModelAttribute request: WaterRequest,
-        @RequestAttribute(value = HttpHeaders.AUTHORIZATION) token: String?
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) token: String?
     ): ResponseEntity<out Any> {
         if (!validator.tokenIsValid(token)) return LOGIN_FAILED
         var file = watermarkService.addWatermark(request.fileimage.bytes, request.message)

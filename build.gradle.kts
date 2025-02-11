@@ -51,6 +51,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-gson:0.12.6")
     implementation(kotlin("reflect"))
     implementation("org.modelmapper:modelmapper:3.2.2")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4")
 
 
 
