@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.chuikov.controller.util.LOGIN_FAILED
 import ru.chuikov.controller.util.NOT_FOUND
@@ -91,7 +92,6 @@ class SpaceFlightController(
         @RequestBody request: BayTicketRequest
     ): ResponseEntity<out Any> {
         if (!validator.tokenIsValid(token)) return LOGIN_FAILED
-
         var error = mutableMapOf<String, Array<String>>()
         var user: User = userRepository.findByToken(token!!.getToken() ?: "") ?: return LOGIN_FAILED
         var flight: SpaceFlightEntity? = spaceFlightRepository.findByFlightNumber(request.flight_number!!)
@@ -112,28 +112,24 @@ class SpaceFlightController(
     }
 
 
-
-    fun search(@RequestHeader(value = HttpHeaders.AUTHORIZATION) token: String?): ResponseEntity<out Any> {
-        TODO("")
-
-    }
-
-    data class SpaceFlightRequest(
-        @SerializedName("destination")
-        var destination: String?,
-        @SerializedName("flight_number")
-        var flight_number: String?,
-        @SerializedName("launch_date")
-        var launch_date: String?,
-        @SerializedName("seats_available")
-        var seats_available: Int?
-    )
-
-    data class BayTicketRequest(
-        @SerializedName("flight_number")
-        var flight_number: String?
-    )
 }
+
+data class SpaceFlightRequest(
+    @SerializedName("destination")
+    var destination: String?,
+    @SerializedName("flight_number")
+    var flight_number: String?,
+    @SerializedName("launch_date")
+    var launch_date: String?,
+    @SerializedName("seats_available")
+    var seats_available: Int?
+)
+
+data class BayTicketRequest(
+    @SerializedName("flight_number")
+    var flight_number: String?
+)
+
 
 
 

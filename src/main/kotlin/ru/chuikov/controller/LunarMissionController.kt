@@ -5,15 +5,9 @@ import org.modelmapper.ModelMapper
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import ru.chuikov.controller.util.*
+import ru.chuikov.entity.SpaceFlightEntity
 import ru.chuikov.entity.User
 import ru.chuikov.entity.mission.*
 import ru.chuikov.getToken
@@ -100,88 +94,67 @@ class LunarMissionController(
         if (!errors.isEmpty()) return ResponseEntity.status(422).body(
             getValidationErrorResponse(errors = errors)
         )
-//        nMission.user = user
-//        nMission.id = oldMission.id
         oldMission.name = nMission.name
         oldMission.spacecraft = nMission.spacecraft
         oldMission.launch_details = nMission.launch_details
         oldMission.landing_details = nMission.landing_details
-
-
-
         missionRepository.save(oldMission)
-
-        //TODO("edit mission")
         return ResponseEntity.ok().body(mapOf("data" to mapOf("code" to 200, "message" to "Миссия обновлена")))
     }
 
-}
+    @GetMapping(
+        "/search",
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+    )
+    fun search(
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) token: String?,
+        @RequestParam query: String?
+    ): ResponseEntity<out Any> {
+        if (!validator.tokenIsValid(token)) return LOGIN_FAILED
+        if (query == null) return ResponseEntity.status(422)
+            .body(getValidationErrorResponse(errors = mapOf("query" to arrayOf("field query is blank"))))
+        var user: User = userRepository.findByToken(token!!.getToken() ?: "") ?: return LOGIN_FAILED
+        var missions = missionRepository.findByUser_Id(user.id)
 
 
-data class MissionRequest(
-    @SerializedName("mission")
-    var mission: MissionAddRequest?
-)
+        var resMissions = mutableListOf<MissionEntity>()
+        missions.forEach {
+            var added = false
+            if (it.name!!.lowercase().contains(query.lowercase())) added = true
+            it.spacecraft?.crew?.forEach {
+                if (it.name!!.lowercase().contains(query.lowercase())) added = true
+            }
+            if (added) resMissions.add(it)
+        }
 
-data class MissionAddRequest(
-    @SerializedName("landing_details")
-    var landing_details: LandingDetails?,
-    @SerializedName("launch_details")
-    var launch_details: LaunchDetails?,
-    @SerializedName("name")
-    var name: String?,
-    @SerializedName("spacecraft")
-    var spacecraft: Spacecraft?
-) {
-    data class LandingDetails(
+        return ResponseEntity.status(200).body(mapOf("data" to resMissions.map {
+            SearchItemResponse(
+                type = "Миссия",
+                name = it.name,
+                landing_date = it.landing_details?.landing_date,
+                launch_date = it.launch_details?.launch_date,
+                landing_site = it.landing_details?.landing_site?.name,
+                crew = it.spacecraft?.crew?.map {
+                    SearchItemResponse.Crew(name = it.name, role = it.role)
+                }
+            )
+        }))
+
+    }
+
+    data class SearchItemResponse(
+        @SerializedName("crew")
+        var crew: List<Crew?>?,
         @SerializedName("landing_date")
         var landing_date: String?,
         @SerializedName("landing_site")
-        var landing_site: LandingSite?
-    ) {
-        data class LandingSite(
-            @SerializedName("coordinates")
-            var coordinates: Coordinates?,
-            @SerializedName("name")
-            var name: String?
-        ) {
-            data class Coordinates(
-                @SerializedName("latitude")
-                var latitude: Double?,
-                @SerializedName("longitude")
-                var longitude: Double?
-            )
-        }
-    }
-
-    data class LaunchDetails(
+        var landing_site: String?,
         @SerializedName("launch_date")
         var launch_date: String?,
-        @SerializedName("launch_site")
-        var launch_site: LaunchSite?
-    ) {
-        data class LaunchSite(
-            @SerializedName("location")
-            var location: Location?,
-            @SerializedName("name")
-            var name: String?
-        ) {
-            data class Location(
-                @SerializedName("latitude")
-                var latitude: Double?,
-                @SerializedName("longitude")
-                var longitude: Double?
-            )
-        }
-    }
-
-    data class Spacecraft(
-        @SerializedName("command_module")
-        var command_module: String?,
-        @SerializedName("crew")
-        var crew: List<Crew?>?,
-        @SerializedName("lunar_module")
-        var lunar_module: String?
+        @SerializedName("name")
+        var name: String?,
+        @SerializedName("type")
+        var type: String?
     ) {
         data class Crew(
             @SerializedName("name")
@@ -189,5 +162,80 @@ data class MissionAddRequest(
             @SerializedName("role")
             var role: String?
         )
+    }
+
+    data class MissionRequest(
+        @SerializedName("mission")
+        var mission: MissionAddRequest?
+    )
+
+    data class MissionAddRequest(
+        @SerializedName("landing_details")
+        var landing_details: LandingDetails?,
+        @SerializedName("launch_details")
+        var launch_details: LaunchDetails?,
+        @SerializedName("name")
+        var name: String?,
+        @SerializedName("spacecraft")
+        var spacecraft: Spacecraft?
+    ) {
+        data class LandingDetails(
+            @SerializedName("landing_date")
+            var landing_date: String?,
+            @SerializedName("landing_site")
+            var landing_site: LandingSite?
+        ) {
+            data class LandingSite(
+                @SerializedName("coordinates")
+                var coordinates: Coordinates?,
+                @SerializedName("name")
+                var name: String?
+            ) {
+                data class Coordinates(
+                    @SerializedName("latitude")
+                    var latitude: Double?,
+                    @SerializedName("longitude")
+                    var longitude: Double?
+                )
+            }
+        }
+
+        data class LaunchDetails(
+            @SerializedName("launch_date")
+            var launch_date: String?,
+            @SerializedName("launch_site")
+            var launch_site: LaunchSite?
+        ) {
+            data class LaunchSite(
+                @SerializedName("location")
+                var location: Location?,
+                @SerializedName("name")
+                var name: String?
+            ) {
+                data class Location(
+                    @SerializedName("latitude")
+                    var latitude: Double?,
+                    @SerializedName("longitude")
+                    var longitude: Double?
+                )
+            }
+        }
+
+
+        data class Spacecraft(
+            @SerializedName("command_module")
+            var command_module: String?,
+            @SerializedName("crew")
+            var crew: List<Crew?>?,
+            @SerializedName("lunar_module")
+            var lunar_module: String?
+        ) {
+            data class Crew(
+                @SerializedName("name")
+                var name: String?,
+                @SerializedName("role")
+                var role: String?
+            )
+        }
     }
 }

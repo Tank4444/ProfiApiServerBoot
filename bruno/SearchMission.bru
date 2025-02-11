@@ -1,0 +1,28 @@
+meta {
+  name: SearchMission
+  type: http
+  seq: 15
+}
+
+get {
+  url: http://localhost:8080/search?query=Аполлон
+  body: none
+  auth: none
+}
+
+params:query {
+  query: Аполлон
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzkyNjgwNzB9.k2rXx31otQZ2R-NRo-THCUhBp2VYLU7pUOj2fiFdzjw
+}
+
+body:json {
+  {
+    "flight_number": "СФ-103",
+    "destination": "Марс",
+    "launch_date": "2025-05-15",
+    "seats_available": 6
+  }
+}
