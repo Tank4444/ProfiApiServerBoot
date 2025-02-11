@@ -1199,3 +1199,15 @@ Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/chayu/I
 	at org.h2.mvstore.SingleFileStore.open(SingleFileStore.java:81)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:286)
 	... 54 more
+2025-02-11 15:08:46.821713+07:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Синтаксическая ошибка в выражении SQL "[*]SPACECRAFT_ENTITY"; ожидалось "SAVEPOINT, SCRIPT, SHUTDOWN"
+Syntax error in SQL statement "[*]SPACECRAFT_ENTITY"; expected "SAVEPOINT, SCRIPT, SHUTDOWN"; SQL statement:
+SPACECRAFT_ENTITY [42001-232]
+2025-02-11 15:09:02.403777+07:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Синтаксическая ошибка в выражении SQL "SELECT *  [*]SPACECRAFT_ENTITY"
+Syntax error in SQL statement "SELECT *  [*]SPACECRAFT_ENTITY"; SQL statement:
+SELECT *  SPACECRAFT_ENTITY [42000-232]
+2025-02-11 15:09:27.547571+07:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Синтаксическая ошибка в выражении SQL "SELECT * [*]SPACECRAFT_ENTITY"
+Syntax error in SQL statement "SELECT * [*]SPACECRAFT_ENTITY"; SQL statement:
+SELECT * SPACECRAFT_ENTITY [42000-232]

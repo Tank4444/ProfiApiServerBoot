@@ -67,7 +67,6 @@ class SpaceFlightController(
 
     @GetMapping(
         "/space-flights",
-        consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun getFlights(@RequestHeader(value = HttpHeaders.AUTHORIZATION) token: String?): ResponseEntity<out Any> {

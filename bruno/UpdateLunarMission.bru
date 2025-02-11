@@ -1,0 +1,61 @@
+meta {
+  name: UpdateLunarMission
+  type: http
+  seq: 14
+}
+
+patch {
+  url: http://localhost:8080/lunar-missions/1
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzkyNjEyMDV9.dgo8Gdh7T8yIN0Vw6YGlmeRvCArTOburYI0aHk0aGF0
+}
+
+body:json {
+  {
+      "mission": {
+          "landing_details": {
+              "landing_date": "1970-12-19",
+              "landing_site": {
+                  "coordinates": {
+                      "latitude": 20.1902,
+                      "longitude": 30.7711
+                  },
+                  "name": "Телец-Литтров1"
+              }
+          },
+          "launch_details": {
+              "launch_date": "1970-11-07",
+              "launch_site": {
+                  "location": {
+                      "latitude": 28.1723,
+                      "longitude": -80.628
+                  },
+                  "name": "Космический центр имени Кеннеди11"
+              }
+          },
+          "name": "Аполлон-01",
+          "spacecraft": {
+              "command_module": "Америка_1",
+              "crew": [
+                  {
+                      "name": "Евгений Сернан1",
+                      "role": "Сержант"
+                  },
+                  {
+                      "name": "Харрисон Шмитт1",
+                      "role": "Пилот лунного модуля 2"
+                  },
+                  {
+                      "name": "Рональд Эванс1",
+                      "role": "Пилот командного модуля 3"
+                  }
+              ],
+              "lunar_module": "Челленджер1"
+          }
+      }
+  }
+}

@@ -7,6 +7,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -30,12 +31,12 @@ class LunarMissionController(
 
     @PostMapping("/lunar-missions")
     fun newMission(
-        @RequestBody request: MissionAddRequest,
+        @RequestBody request: MissionRequest,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) token: String?
     ): ResponseEntity<out Any> {
         if (!validator.tokenIsValid(token)) return LOGIN_FAILED
         var user: User = userRepository.findByToken(token!!.split(" ")[1])!!
-        var mission: MissionEntity = modelMapper.map(request, MissionEntity::class.java)
+        var mission: MissionEntity = modelMapper.map(request.mission, MissionEntity::class.java)
         mission.user = user
         var errors = mission.check("")
         if (!errors.isEmpty()) return ResponseEntity.status(422).body(
@@ -55,7 +56,8 @@ class LunarMissionController(
         if (!validator.tokenIsValid(token)) return LOGIN_FAILED
         var user: User = userRepository.findByToken(token!!.split(" ")[1])!!
         var list = missionRepository.findByUser_Id(user.id)
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list)
+        var nlist = list.map { mapOf("mission" to it) }
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(nlist)
     }
 
     @DeleteMapping("/lunar-missions/{id}")
@@ -74,13 +76,52 @@ class LunarMissionController(
 
     }
 
-    fun editMission(): ResponseEntity<out Any> {
-        TODO("edit mission")
-        return ResponseEntity.ok().body(null)
+    @PatchMapping(
+        "/lunar-missions/{id}",
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+    )
+    fun editMission(
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) token: String?,
+        @PathVariable id: Long,
+        @RequestBody request: MissionRequest
+    ): ResponseEntity<out Any> {
+        //valid token
+        if (!validator.tokenIsValid(token)) return LOGIN_FAILED
+        //get user
+        var user: User = userRepository.findByToken(token!!.getToken()!!)!!
+        //get mission
+        var oldMission: MissionEntity = missionRepository.findById(id).getOrNull() ?: return NOT_FOUND
+        //check access to mission
+        if (user.id != oldMission.user!!.id) LOGIN_FORBIDDEN
+        //validate request
+        var nMission: MissionEntity = modelMapper.map(request.mission, MissionEntity::class.java)
+        var errors = nMission.check("")
+        if (!errors.isEmpty()) return ResponseEntity.status(422).body(
+            getValidationErrorResponse(errors = errors)
+        )
+//        nMission.user = user
+//        nMission.id = oldMission.id
+        oldMission.name = nMission.name
+        oldMission.spacecraft = nMission.spacecraft
+        oldMission.launch_details = nMission.launch_details
+        oldMission.landing_details = nMission.landing_details
+
+
+
+        missionRepository.save(oldMission)
+
+        //TODO("edit mission")
+        return ResponseEntity.ok().body(mapOf("data" to mapOf("code" to 200, "message" to "Миссия обновлена")))
     }
 
 }
 
+
+data class MissionRequest(
+    @SerializedName("mission")
+    var mission: MissionAddRequest?
+)
 
 data class MissionAddRequest(
     @SerializedName("landing_details")
