@@ -2,6 +2,16 @@
 
 ## Готов
 
+## Развёртка
+
+Скачать последнюю версию из релиза [скачать](https://github.com/Tank4444/ProfiApiServerBoot/releases)
+
+Распаковать архив. Запустить ProfiApiServerBoot.exe
+
+Сервер работает на порте [ip адрес]:8080
+
+База данных пересоздаётся при каждом запуске
+
 ### Registration
 
 #### Request
