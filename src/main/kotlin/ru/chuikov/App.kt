@@ -17,7 +17,6 @@ import org.springframework.core.env.Environment
 
 
 @SpringBootApplication
-@ImportRuntimeHints(Application.MyRuntimeHints::class)
 class Application(
     val environment: Environment
 ){
@@ -39,13 +38,6 @@ class Application(
             .title("Профессионалы 2025")
             .description("В разработке.")
         return OpenAPI().info(info).servers(listOf(server))
-    }
-
-    class MyRuntimeHints:RuntimeHintsRegistrar{
-        override fun registerHints(hints: RuntimeHints, classLoader: ClassLoader?) {
-
-        }
-
     }
 }
 
