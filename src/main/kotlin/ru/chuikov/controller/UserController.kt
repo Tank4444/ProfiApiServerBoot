@@ -2,6 +2,7 @@ package ru.chuikov.controller
 
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -22,7 +23,7 @@ class UserController(
     val validator: Validator
 ) {
     @PostMapping("/registration")
-    fun registration(@RequestBody request: UserRegistrationDto): ResponseEntity<Any> {
+    fun registration(@RequestBody request: UserRegistrationDto): ResponseEntity<out Any> {
         var errors = mutableMapOf<String, Array<String>>()
 
 
@@ -65,7 +66,10 @@ class UserController(
         }
     }
 
-    @PostMapping("/authorization")
+    @PostMapping("/authorization",
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+        )
     fun authorization(@RequestBody request: AuthorizationRequest): ResponseEntity<out Any> {
         var errors = mutableMapOf<String, Array<String>>()
         validator.checkPassword(request.password)?.let { errors.putAll(it) }
@@ -110,7 +114,7 @@ class UserController(
     }
 }
 
-
+@JsonSerialize
 data class RegistrationSuccessfulResponse(
     @JsonProperty("data")
     var `data`: Data?

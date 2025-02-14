@@ -9,6 +9,7 @@ plugins {
     kotlin("plugin.jpa") version "1.9.25"
 }
 
+
 group = "ru.chuikov"
 version = "0.0.1-SNAPSHOT"
 

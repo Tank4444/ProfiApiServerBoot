@@ -3,19 +3,21 @@ package ru.chuikov
 
 
 import io.swagger.v3.oas.models.OpenAPI
-import io.swagger.v3.oas.models.info.Contact
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.servers.Server
 import org.modelmapper.ModelMapper
 import org.modelmapper.convention.MatchingStrategies
+import org.springframework.aot.hint.RuntimeHints
+import org.springframework.aot.hint.RuntimeHintsRegistrar
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ImportRuntimeHints
 import org.springframework.core.env.Environment
-import java.util.List
 
 
 @SpringBootApplication
+@ImportRuntimeHints(Application.MyRuntimeHints::class)
 class Application(
     val environment: Environment
 ){
@@ -36,7 +38,14 @@ class Application(
         val info: Info = Info()
             .title("Профессионалы 2025")
             .description("В разработке.")
-        return OpenAPI().info(info).servers(List.of(server))
+        return OpenAPI().info(info).servers(listOf(server))
+    }
+
+    class MyRuntimeHints:RuntimeHintsRegistrar{
+        override fun registerHints(hints: RuntimeHints, classLoader: ClassLoader?) {
+
+        }
+
     }
 }
 
