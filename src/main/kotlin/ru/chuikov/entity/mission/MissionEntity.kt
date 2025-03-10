@@ -12,7 +12,7 @@ class MissionEntity : CheckInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    @JsonIgnore
+    //@JsonIgnore
     var id: Long? = null
 
     @ManyToOne()
